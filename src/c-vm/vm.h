@@ -1,6 +1,7 @@
 #ifndef VM_H_
 #define VM_H_
 
+#include <cstdint>
 #include <stdio.h>
 #include <stdint.h>
 #include <signal.h>
@@ -57,4 +58,17 @@ enum
     ZRO = 1 << 1, // Z
     NEG = 1 << 2 // N
 };
+
+/* Memory mapped registers
+ * Special registers with specific address to interact with hardware device
+ * such as keyboard
+ * */
+enum
+{
+    KBSR = 0xFE00, // keyboard status
+    KBDR = 0xFE02, // keyboard data
+};
+
+void mem_write(uint16_t addr, uint16_t val);
+uint16_t mem_read(uint16_t addr);
 #endif
