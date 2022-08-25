@@ -2,7 +2,7 @@
 #include "opcode.h"
 uint16_t sign_extension(uint16_t x, int bit_count) {
     if ((x >> (bit_count - 1)) & 1) {
-        x |= 0xFFFF << bit_count; /* 0xFFF is -1 in hexa, we do the inverse of x*/
+        x |= (0xFFFF << bit_count); /* 0xFFF is -1 in hexa, we do the inverse of x*/
     }
     return x;
 }
@@ -55,7 +55,7 @@ void and_op(uint16_t instruction)
 
     if (imm_flag) {
         uint16_t immediate = sign_extension(instruction & 0x1F, 5);
-        reg[0] = reg[1] & immediate;
+        reg[r0] = reg[r1] & immediate;
     }
     else {
         uint16_t r2 = instruction & 0x7;
@@ -76,7 +76,7 @@ void branch(uint16_t instruction) {
     uint16_t flag = (instruction >> 9) & 0x7;
     uint16_t offset = sign_extension(instruction & 0x1FF, 9);
     if (flag & reg[RCOND])
-        reg[RPC] = offset;
+        reg[RPC] += offset;
 }
 
 void jump(uint16_t instruction) {
@@ -89,7 +89,7 @@ void jump_register(uint16_t instruction) {
     reg[R7] = reg[RPC];
     if (flag) /* JSR */
     {
-        uint16_t offset = sign_extension(instruction & 0x1FF, 11);
+        uint16_t offset = sign_extension(instruction & 0x7FF, 11);
         reg[RPC] += offset;
     }
     else { /* JSRR */
@@ -100,7 +100,7 @@ void jump_register(uint16_t instruction) {
 
 void load(uint16_t instruction) {
     uint16_t r0 = (instruction >> 9) & 0x7;
-    uint16_t offset = sign_extension(instruction & 0x1FF, 6);
+    uint16_t offset = sign_extension(instruction & 0x1FF, 9);
     reg[r0] = mem_read(reg[RPC] + offset);
     update_flags(r0);
 }
@@ -109,7 +109,7 @@ void load_register(uint16_t instruction) {
     uint16_t r0 = (instruction >> 9) & 0x7;
     uint16_t r1 = (instruction >> 6) & 0x7;
     uint16_t offset = sign_extension(instruction & 0x3F, 6);
-    reg[r0] = mem_read(reg[r1], offset);
+    reg[r0] = mem_read(reg[r1] + offset);
     update_flags(r0);
 }
 

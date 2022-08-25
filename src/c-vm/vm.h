@@ -1,7 +1,6 @@
 #ifndef VM_H_
 #define VM_H_
 
-#include <cstdint>
 #include <stdio.h>
 #include <stdint.h>
 #include <signal.h>

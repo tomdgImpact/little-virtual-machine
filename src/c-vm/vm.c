@@ -40,6 +40,15 @@ void mem_write(uint16_t addr, uint16_t val) {
     memory[addr] = val;
 }
 
+uint16_t check_key() {
+    fd_set read_fd;
+    FD_ZERO(&read_fd);
+    FD_SET(STDIN_FILENO, &read_fd);
+    struct timeval time;
+    time.tv_sec = 0;
+    time.tv_usec = 0;
+    return select(1, &read_fd, NULL, NULL, &time) != 0;
+}
 uint16_t mem_read(uint16_t addr) {
     if (addr == KBSR) {
         if (check_key()){
@@ -69,15 +78,6 @@ void restore_input_buffer() {
     tcsetattr(STDIN_FILENO, TCSANOW, &term);
 }
 
-uint16_t check_key() {
-    fd_set read_fd;
-    FD_ZERO(&read_fd);
-    FD_SET(STDIN_FILENO, &read_fd);
-    struct timeval time;
-    time.tv_sec = 0;
-    time.tv_usec = 0;
-    return select(1, &read_fd, NULL, NULL, &time) != 0;
-}
 
 void handler(int signal){
     restore_input_buffer();
@@ -114,45 +114,60 @@ int main(int argc, char **argv)
     {
         /* Fetch instruction from program counter and read memory */
         uint16_t instruction = mem_read(reg[RPC]++);
-        uint16_t opcode = instruction << 12;/* opcode stored in the left 4 bits*/
-    switch (opcode) /* To decide what to execute */
-    {
-    case ADD:
-        add(instruction);
-        break;
-    case AND:
-        break;
-    case NOT:
-        break;
-    case BR:
-        break;
-    case JMP:
-        break;
-    case JSR:
-        break;
-    case LD:
-        break;
-    case LDI:
-        ldi(instruction);
-        break;
-    case LDR:
-        break;
-    case LEA:
-        break;
-    case ST:
-        break;
-    case STI:
-        break;
-    case STR:
-        break;
-    case TRAP:
-        break;
-    case RES:
-    case RTI:
-    default:
-        // bad opcode
-        abort();
-        break;
+        uint16_t opcode = instruction >> 12;/* opcode stored in the left 4 bits*/
+        switch (opcode) /* To decide what to execute */
+        {
+            case ADD:
+                add(instruction);
+                break;
+            case AND:
+                and_op(instruction);
+                break;
+            case NOT:
+                not_op(instruction);
+                break;
+            case BR:
+                branch(instruction);
+                break;
+            case JMP:
+                jump(instruction);
+                break;
+            case JSR:
+                jump_register(instruction);
+                break;
+            case LD:
+                load(instruction);
+                break;
+            case LDI:
+                ldi(instruction);
+                break;
+            case LDR:
+                load_register(instruction);
+                break;
+            case LEA:
+                lea(instruction);
+                break;
+            case ST:
+                store(instruction);
+                break;
+            case STI:
+                store_indirect(instruction);
+                break;
+            case STR:
+                store_register(instruction);
+                break;
+            case TRAP:
+                uint16_t res = traps(instruction);
+                if (res == 0)
+                    runnning = 0;
+                break;
+            case RES:
+            case RTI:
+            default:
+                // bad opcode
+                abort();
+                break;
+        }
     }
     restore_input_buffer();
 }
