@@ -18,3 +18,6 @@ Also, garbage collection is a really good example of how VMs are usefull. Indeed
  ## Our achitecture
  We will use a fictional computer that has an architecture called LC-3. LC-3 is used in some university to teach assembly language with the smaller set of instruction compared to x86.
  
+documentation I used to code the project :
+[explanation of the lc-3 architecture](http://www.cs.binghamton.edu/~tbarten1/CS120_Summer_2015/ClassNotes/L10-LC3_Intro.pdf)
+[instruction set and documentation](https://www.jmeiners.com/lc3-vm/supplies/lc3-isa.pdf)
