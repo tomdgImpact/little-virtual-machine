@@ -21,3 +21,12 @@ Also, garbage collection is a really good example of how VMs are usefull. Indeed
 documentation I used to code the project :
 [explanation of the lc-3 architecture](http://www.cs.binghamton.edu/~tbarten1/CS120_Summer_2015/ClassNotes/L10-LC3_Intro.pdf)
 [instruction set and documentation](https://www.jmeiners.com/lc3-vm/supplies/lc3-isa.pdf)
+
+#How to use
+
+```shell=
+cd little-vm/src/c-vm/
+gcc -g3 *.c -o lc3-vm
+# dowload the 2048 games here https://github.com/rpendleton/lc3-2048
+./lc-3 2048.obj
+```
